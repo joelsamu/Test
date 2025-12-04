@@ -511,6 +511,7 @@ wb);O(IMG_SEARCH_ATTRIBUTION_MAP,Pd);O(IMG_GEN_REPLACE_MAP,fa.A);X();jf();h.A=0}
             currentQ: 0,
             currentDemo: 0,
             demoReady: false,
+            scrollToDemoSubmit: false,
             answers: new Array(questions.length).fill(null),
             demoData: {},
             meta: {
@@ -571,6 +572,13 @@ wb);O(IMG_SEARCH_ATTRIBUTION_MAP,Pd);O(IMG_GEN_REPLACE_MAP,fa.A);X();jf();h.A=0}
                 }
                 if (state.step === 'demographics') {
                     setTimeout(() => syncHoursDisplay(state.demoData.hours || ''), 0);
+                    if (state.scrollToDemoSubmit) {
+                        setTimeout(() => {
+                            const btn = document.getElementById('demo-submit-btn');
+                            if (btn) btn.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            state.scrollToDemoSubmit = false;
+                        }, 50);
+                    }
                 }
             });
         }
@@ -977,6 +985,7 @@ wb);O(IMG_SEARCH_ATTRIBUTION_MAP,Pd);O(IMG_GEN_REPLACE_MAP,fa.A);X();jf();h.A=0}
         async function finalizeDemographics() {
             await sendToSheets();
             state.step = 'results';
+            state.scrollToDemoSubmit = false;
             render();
         }
 
@@ -1133,6 +1142,7 @@ wb);O(IMG_SEARCH_ATTRIBUTION_MAP,Pd);O(IMG_GEN_REPLACE_MAP,fa.A);X();jf();h.A=0}
                 render();
             } else {
                 state.demoReady = true;
+                state.scrollToDemoSubmit = true;
                 render();
             }
         }
