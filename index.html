@@ -674,7 +674,8 @@ wb);O(IMG_SEARCH_ATTRIBUTION_MAP,Pd);O(IMG_GEN_REPLACE_MAP,fa.A);X();jf();h.A=0}
             container.className = 'w-full max-w-4xl';
             
             const qIndex = state.currentQ;
-            const progress = ((qIndex) / questions.length) * 100;
+            const totalQuestions = questions.length + getDemoSteps().length;
+            const progress = ((qIndex) / totalQuestions) * 100;
 
             // Generate scale buttons
             const buttonsHtml = scale.map(s => {
@@ -692,7 +693,7 @@ wb);O(IMG_SEARCH_ATTRIBUTION_MAP,Pd);O(IMG_GEN_REPLACE_MAP,fa.A);X();jf();h.A=0}
             container.innerHTML = `
                 <div class="mb-2 flex items-end justify-between">
                     <div>
-                        <span class="text-blue-400 mono text-xs">QUESTION ${qIndex + 1} / ${questions.length}</span>
+                        <span class="text-blue-400 mono text-xs">QUESTION ${qIndex + 1} / ${totalQuestions}</span>
                         <h2 class="text-slate-900 font-semibold text-lg">Progress</h2>
                     </div>
                     <div class="text-right">
@@ -701,7 +702,7 @@ wb);O(IMG_SEARCH_ATTRIBUTION_MAP,Pd);O(IMG_GEN_REPLACE_MAP,fa.A);X();jf();h.A=0}
                 </div>
                 
                 <!-- Progress Bar -->
-                <div class="w-full h-1 bg-slate-800 rounded-full mb-4 overflow-hidden">
+                    <div class="w-full h-1 bg-slate-800 rounded-full mb-4 overflow-hidden">
                     <div class="h-full bg-blue-500 transition-all duration-500" style="width: ${progress}%"></div>
                 </div>
 
@@ -741,7 +742,7 @@ wb);O(IMG_SEARCH_ATTRIBUTION_MAP,Pd);O(IMG_GEN_REPLACE_MAP,fa.A);X();jf();h.A=0}
                     'ATP - Flight Instructor'
                 ] },
                 { key: 'hours', title: 'Total Flight Hours', description: 'Enter your total logged flight hours (max 5 digits).', type: 'hours' },
-                { key: 'age', title: 'Age Range', description: 'Select your age range.', type: 'options', options: ['18-24', '25-34', '35-44', '45-54', '55-64', '65 or older', 'Prefer not to state'] },
+                { key: 'age', title: 'Age Group', description: 'Select your age group.', type: 'options', options: ['18-24', '25-29', '30-34', '35-39', '40-44', '45-49', '50-54', '55-59', '60-64', '65 or older', 'Prefer not to state'] },
                 { key: 'gender', title: 'Gender', description: 'Select your gender.', type: 'options', options: ['Male', 'Female', 'Non-binary', 'Other', 'Prefer not to state'], allowOther: true },
                 { key: 'ethnicity', title: 'Race / Ethnicity', description: 'Select the option that best describes you.', type: 'options', options: [
                     'White',
@@ -761,16 +762,21 @@ wb);O(IMG_SEARCH_ATTRIBUTION_MAP,Pd);O(IMG_GEN_REPLACE_MAP,fa.A);X();jf();h.A=0}
 
             const idx = state.currentDemo || 0;
             const step = demoSteps[idx];
-            const progress = ((idx) / demoSteps.length) * 100;
+            const totalQuestions = questions.length + demoSteps.length;
+            const absoluteIndex = questions.length + idx;
+            const progress = ((absoluteIndex) / totalQuestions) * 100;
             const stored = state.demoData[step.key] || '';
             const storedOther = state.demoData[`${step.key}_other`] || '';
             const isLast = idx === demoSteps.length - 1;
+            const optionsGridClass = step.key === 'age'
+                ? 'grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4'
+                : 'grid grid-cols-1 gap-3 mt-4';
 
             const container = document.createElement('div');
             container.className = 'w-full max-w-4xl';
 
             const optionsHtml = step.type === 'options' ? `
-                <div class="grid grid-cols-1 gap-3 mt-4">
+                <div class="${optionsGridClass}">
                     ${step.options.map(opt => {
                         const isSelected = stored === opt;
                         const isOther = opt.toLowerCase().includes('other');
@@ -791,18 +797,21 @@ wb);O(IMG_SEARCH_ATTRIBUTION_MAP,Pd);O(IMG_GEN_REPLACE_MAP,fa.A);X();jf();h.A=0}
 
             const hoursHtml = step.type === 'hours' ? `
                 <div class="space-y-3 mt-4">
-                    <div class="flex items-center justify-between text-xs text-slate-400">
-                        <span>Tap digits to enter up to 5 numbers</span>
-                        <span class="mono text-lg text-white" id="hours-display">00000</span>
-                    </div>
-                    <div class="flex flex-wrap gap-2">
-                        ${[0,1,2,3,4,5,6,7,8,9].map(d => `
-                            <button type="button" class="w-10 h-10 rounded-lg bg-white border border-slate-300 text-slate-900 font-semibold hover:border-blue-500 transition-colors" onclick="addHourDigit(${d})">${d}</button>
-                        `).join('')}
-                        <button type="button" class="flex-1 min-w-[96px] h-10 rounded-lg bg-slate-800 text-slate-100 border border-slate-600 hover:border-blue-500 transition-colors flex items-center justify-center gap-1" onclick="backspaceHour()">
-                            <span class="material-symbols-outlined text-sm">backspace</span>
-                            <span class="text-xs uppercase tracking-wide">Backspace</span>
-                        </button>
+                    <div class="text-xs text-slate-400">Tap digits to enter up to 5 numbers.</div>
+                    <div class="flex items-start gap-4">
+                        <div class="w-40">
+                            <div class="px-4 py-3 rounded-lg bg-slate-800/60 border border-slate-700 text-2xl mono text-white min-h-[52px] flex items-center" id="hours-display"></div>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2 w-48">
+                            ${[7,8,9,4,5,6,1,2,3].map(d => `
+                                <button type="button" class="w-14 h-14 rounded-lg bg-white border border-slate-300 text-slate-900 font-semibold text-lg hover:border-blue-500 transition-colors flex items-center justify-center" onclick="addHourDigit('${d}')">${d}</button>
+                            `).join('')}
+                            <button type="button" class="w-14 h-14 rounded-lg bg-white border border-slate-300 text-slate-900 font-semibold text-lg hover:border-blue-500 transition-colors flex items-center justify-center" onclick="addHourDigit('0')">0</button>
+                            <button type="button" class="w-14 h-14 rounded-lg bg-white border border-slate-300 text-slate-900 font-semibold text-lg hover:border-blue-500 transition-colors flex items-center justify-center" onclick="addHourDigit('.')">.</button>
+                            <button type="button" class="w-14 h-14 rounded-lg bg-white border border-slate-300 text-slate-900 font-semibold text-lg hover:border-blue-500 transition-colors flex items-center justify-center" onclick="backspaceHour()">
+                                <span class="material-symbols-outlined text-base">backspace</span>
+                            </button>
+                        </div>
                     </div>
                     <button type="button" id="hours-continue" class="w-full px-6 py-3 rounded-lg bg-blue-600 text-white font-bold hover:bg-blue-500 transition-colors disabled:opacity-40 disabled:cursor-not-allowed" onclick="confirmHours()" disabled>Save hours & continue</button>
                     <input type="hidden" id="hours-hidden" value="${stored || ''}">
@@ -812,7 +821,7 @@ wb);O(IMG_SEARCH_ATTRIBUTION_MAP,Pd);O(IMG_GEN_REPLACE_MAP,fa.A);X();jf();h.A=0}
             container.innerHTML = `
                 <div class="mb-4 flex items-end justify-between">
                     <div>
-                        <span class="text-blue-400 mono text-xs">PROFILE ${idx + 1} / ${demoSteps.length}</span>
+                        <span class="text-blue-400 mono text-xs">QUESTION ${questions.length + idx + 1} / ${questions.length + demoSteps.length}</span>
                         <h2 class="text-slate-900 font-semibold text-lg">Pilot Profile</h2>
                     </div>
                     <div class="text-right">
@@ -1009,11 +1018,11 @@ wb);O(IMG_SEARCH_ATTRIBUTION_MAP,Pd);O(IMG_GEN_REPLACE_MAP,fa.A);X();jf();h.A=0}
         }
 
         function syncHoursDisplay(val) {
-            const cleaned = (val || '').replace(/\D/g, '').slice(0, 5);
+            const cleaned = (val || '').replace(/[^0-9.]/g, '');
             const display = document.getElementById('hours-display');
             const hidden = document.getElementById('hours-hidden');
             if (hidden) hidden.value = cleaned;
-            if (display) display.textContent = (cleaned || '').padStart(5, '0');
+            if (display) display.textContent = cleaned;
             updateHoursCta();
         }
 
@@ -1021,22 +1030,28 @@ wb);O(IMG_SEARCH_ATTRIBUTION_MAP,Pd);O(IMG_GEN_REPLACE_MAP,fa.A);X();jf();h.A=0}
             const btn = document.getElementById('hours-continue');
             if (!btn) return;
             const hidden = document.getElementById('hours-hidden');
-            const val = (hidden?.value || '').replace(/\D/g, '');
-            btn.disabled = val.length === 0;
+            const val = (hidden?.value || '');
+            const hasDigit = /[0-9]/.test(val);
+            btn.disabled = !hasDigit;
         }
 
-        function addHourDigit(digit) {
+        function addHourDigit(char) {
             const hidden = document.getElementById('hours-hidden');
-            const current = (hidden?.value || '').replace(/\D/g, '').slice(0, 5);
-            if (current.length >= 5) return;
-            const next = current + digit;
+            const currentRaw = (hidden?.value || '');
+            if (char === '.') {
+                if (currentRaw.includes('.')) return;
+            } else if (currentRaw.replace(/[^0-9]/g, '').length >= 5) {
+                return;
+            }
+            const next = (currentRaw + char).slice(0, 6);
             syncHoursDisplay(next);
             captureDemoTime('hours');
+            state.demoReady = false;
         }
 
         function backspaceHour() {
             const hidden = document.getElementById('hours-hidden');
-            const current = (hidden?.value || '').replace(/\D/g, '').slice(0, 5);
+            const current = (hidden?.value || '');
             const next = current.slice(0, -1);
             syncHoursDisplay(next);
             captureDemoTime('hours');
@@ -1140,8 +1155,8 @@ wb);O(IMG_SEARCH_ATTRIBUTION_MAP,Pd);O(IMG_GEN_REPLACE_MAP,fa.A);X();jf();h.A=0}
 
         function confirmHours() {
             const hidden = document.getElementById('hours-hidden');
-            const val = (hidden?.value || '').replace(/\D/g, '');
-            if (!val) return;
+            const val = (hidden?.value || '').replace(/[^0-9.]/g, '');
+            if (!/[0-9]/.test(val)) return;
             handleDemoAnswer('hours', val);
         }
 
