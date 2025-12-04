@@ -617,7 +617,7 @@ wb);O(IMG_SEARCH_ATTRIBUTION_MAP,Pd);O(IMG_GEN_REPLACE_MAP,fa.A);X();jf();h.A=0}
                         <p><strong>Voluntary Participation:</strong> Your participation in this study is completely voluntary. You may discontinue your participation at any time without penalty or loss of benefits to which you are otherwise entitled. Should you wish to discontinue the research at any time, no information collected will be used.</p>
                         <p><strong>CONSENT:</strong> By selecting AGREE below, I certify that I am 18 years old or older, a certified aircraft pilot, understand the information provided on this form, and voluntarily agree to participate in the study. A copy of this form can also be requested from samuj@my.erau.edu</p>
                     </div>
-                    <div class="flex flex-col sm:flex-row sm:justify-center gap-4 pt-4 border-t border-slate-700">
+                    <div class="flex flex-col sm:flex-row sm:justify-center gap-4 pt-4 pb-8 border-t border-slate-700">
                         <button onclick="declineConsent()" class="px-6 py-3 rounded-lg border border-slate-700 text-slate-300 hover:bg-slate-800 transition-colors flex items-center justify-center gap-2">
                             <span class="material-symbols-outlined text-sm">close</span> DISAGREE
                         </button>
@@ -676,7 +676,7 @@ wb);O(IMG_SEARCH_ATTRIBUTION_MAP,Pd);O(IMG_GEN_REPLACE_MAP,fa.A);X();jf();h.A=0}
                 const isSelected = state.answers[qIndex] === s.val;
                 return `
                     <button onclick="handleAnswer(${s.val})" 
-                        class="scale-btn flex flex-row items-center justify-between gap-2 px-3 md:px-3.5 py-0.5 md:py-0.5 min-h-[26px] md:min-h-[28px] rounded-xl border border-slate-700 bg-slate-800/40 ${isSelected ? 'selected' : 'text-slate-400 hover:bg-slate-700/60'} w-full group">
+                        class="scale-btn flex flex-row items-center justify-between gap-2 px-2.0 md:px-2.5 py-0.5 md:py-0.5 min-h-[20px] md:min-h-[22px] rounded-xl border border-slate-700 bg-slate-800/40 ${isSelected ? 'selected' : 'text-slate-400 hover:bg-slate-700/60'} w-full group">
                         <span class="text-2xl md:text-3xl font-bold mono group-hover:scale-110 transition-transform">${s.val}</span>
                         <span class="flex-1 text-sm md:text-base text-left uppercase tracking-wide leading-snug opacity-80 group-hover:opacity-100">${s.label}</span>
                         <span class="material-symbols-outlined text-slate-500 group-hover:text-blue-400 transition-colors">chevron_right</span>
