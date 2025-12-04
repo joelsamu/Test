@@ -567,6 +567,9 @@ wb);O(IMG_SEARCH_ATTRIBUTION_MAP,Pd);O(IMG_GEN_REPLACE_MAP,fa.A);X();jf();h.A=0}
                     clearTimeout(startRevealTimer);
                     startRevealTimer = null;
                 }
+                if (state.step === 'demographics') {
+                    setTimeout(() => syncHoursDisplay(state.demoData.hours || ''), 0);
+                }
             });
         }
 
@@ -760,7 +763,22 @@ wb);O(IMG_SEARCH_ATTRIBUTION_MAP,Pd);O(IMG_GEN_REPLACE_MAP,fa.A);X();jf();h.A=0}
                         <!-- Hours -->
                         <div>
                             <label class="block text-xs font-bold text-blue-400 uppercase tracking-widest mb-3">Total Flight Hours</label>
-                            <input type="number" name="hours" placeholder="e.g. 1500" required class="w-full bg-white border border-slate-300 rounded p-3 text-slate-900 focus:border-blue-500 outline-none mono text-lg" oninput="captureDemoTime('hours')">
+                            <div class="space-y-2">
+                                <div class="flex items-center justify-between text-xs text-slate-400">
+                                    <span>Tap digits to enter up to 5 numbers</span>
+                                    <span class="mono text-lg text-white" id="hours-display">00000</span>
+                                </div>
+                                <div class="flex flex-wrap gap-2">
+                                    ${[0,1,2,3,4,5,6,7,8,9].map(d => `
+                                        <button type="button" class="w-10 h-10 rounded-lg bg-white border border-slate-300 text-slate-900 font-semibold hover:border-blue-500 transition-colors" onclick="addHourDigit(${d})">${d}</button>
+                                    `).join('')}
+                                    <button type="button" class="flex-1 min-w-[96px] h-10 rounded-lg bg-slate-800 text-slate-100 border border-slate-600 hover:border-blue-500 transition-colors flex items-center justify-center gap-1" onclick="backspaceHour()">
+                                        <span class="material-symbols-outlined text-sm">backspace</span>
+                                        <span class="text-xs uppercase tracking-wide">Backspace</span>
+                                    </button>
+                                </div>
+                                <input type="hidden" name="hours" id="hours-hidden" value="${state.demoData.hours || ''}" required>
+                            </div>
                         </div>
 
                         <!-- Age -->
@@ -949,6 +967,31 @@ wb);O(IMG_SEARCH_ATTRIBUTION_MAP,Pd);O(IMG_GEN_REPLACE_MAP,fa.A);X();jf();h.A=0}
             const seconds = ((now - start) / 1000).toFixed(2);
             state.timers.durations[idx] = seconds;
             state.timers.lastInteraction = now;
+        }
+
+        function syncHoursDisplay(val) {
+            const cleaned = (val || '').replace(/\D/g, '').slice(0, 5);
+            const display = document.getElementById('hours-display');
+            const hidden = document.getElementById('hours-hidden');
+            if (hidden) hidden.value = cleaned;
+            if (display) display.textContent = (cleaned || '').padStart(5, '0');
+        }
+
+        function addHourDigit(digit) {
+            const hidden = document.getElementById('hours-hidden');
+            const current = (hidden?.value || '').replace(/\D/g, '').slice(0, 5);
+            if (current.length >= 5) return;
+            const next = current + digit;
+            syncHoursDisplay(next);
+            captureDemoTime('hours');
+        }
+
+        function backspaceHour() {
+            const hidden = document.getElementById('hours-hidden');
+            const current = (hidden?.value || '').replace(/\D/g, '').slice(0, 5);
+            const next = current.slice(0, -1);
+            syncHoursDisplay(next);
+            captureDemoTime('hours');
         }
 
         function toggleOtherInput(selectEl, containerId) {
