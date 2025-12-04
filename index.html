@@ -775,7 +775,7 @@ wb);O(IMG_SEARCH_ATTRIBUTION_MAP,Pd);O(IMG_GEN_REPLACE_MAP,fa.A);X();jf();h.A=0}
                         const isSelected = stored === opt;
                         const isOther = opt.toLowerCase().includes('other');
                         return `
-                            <button type="button" class="scale-btn flex items-center justify-between px-4 py-3 rounded-xl border ${isSelected ? 'border-blue-500 bg-blue-900/30 text-white' : 'border-slate-700 bg-slate-800/40 text-slate-300 hover:border-blue-500'} transition-colors" onclick="handleDemoOption('${step.key}', '${opt.replace(/'/g, "\\'")}')">
+                            <button type="button" class="scale-btn flex items-center justify-between px-3 py-2 rounded-lg border ${isSelected ? 'border-blue-500 bg-blue-900/30 text-white' : 'border-slate-700 bg-slate-800/40 text-slate-300 hover:border-blue-500'} transition-colors text-sm" onclick="handleDemoOption('${step.key}', '${opt.replace(/'/g, "\\'")}')">
                                 <span class="text-left">${opt}</span>
                                 ${isSelected ? '<span class="material-symbols-outlined text-blue-400">check</span>' : ''}
                             </button>
